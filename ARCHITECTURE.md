@@ -6,7 +6,7 @@
 - **Spring Cloud Gateway**: punto de entrada único. Valida JWT y rol antes de enrutar solicitudes.
 - **Auth Service**: consulta su propia base de usuarios, verifica contraseñas BCrypt y emite JWT con rol y expiración.
 - **Loan Service**: crea y consulta solicitudes; los administradores pueden aprobarlas o rechazarlas.
-- **Persistencia**: Auth Service y Loan Service poseen bases independientes. Compose usa PostgreSQL; el modo local usa H2.
+- **Persistencia**: Auth Service y Loan Service poseen bases independientes. El desarrollo local usa H2; se puede conectar PostgreSQL externo mediante configuración de datasource.
 
 ```mermaid
 flowchart LR
@@ -51,5 +51,5 @@ Estas cuentas y la clave JWT predeterminada son únicamente para desarrollo. Pro
 
 ## Ejecución
 
-- **Sin Docker**: Auth Service y Loan Service usan perfiles `local` con H2. Se ejecutan cuatro procesos: Auth Service, Loan Service, gateway y Angular. Los comandos están en `README.md`.
-- **Compose**: frontend, gateway, ambos servicios y dos instancias PostgreSQL con volúmenes separados.
+- **Desarrollo local**: Auth Service y Loan Service usan perfiles `local` con H2. Se ejecutan cuatro procesos: Auth Service, Loan Service, gateway y Angular. Los comandos están en `README.md`.
+- **Producción**: cada servicio se despliega por separado y se configura con su propia base PostgreSQL y secretos externos.

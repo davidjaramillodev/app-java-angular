@@ -10,31 +10,7 @@ Aplicación de préstamos bancarios con Angular, Spring Cloud Gateway y microser
 
 ## Ejecutar localmente
 
-Requisitos: Docker Desktop con Docker Compose. El primer arranque descarga imágenes y dependencias.
-
-```powershell
-docker compose -f infra/compose.yaml up --build
-```
-
-Abre `http://localhost:4200` para iniciar sesión.
-
-Para detener los contenedores:
-
-```powershell
-docker compose -f infra/compose.yaml down
-```
-
-Para borrar también los datos PostgreSQL de desarrollo:
-
-```powershell
-docker compose -f infra/compose.yaml down -v
-```
-
-El puerto publicado está ligado a `127.0.0.1`. El login demo es solo para desarrollo; no expongas el gateway directamente ni uses la cuenta o clave demo en producción.
-
-## Ejecutar sin Docker
-
-Requisitos: JDK 21, Maven 3.9 o superior, Node.js 22 LTS con npm. Auth Service y Loan Service usan H2 en archivos locales; no necesitas instalar PostgreSQL.
+Requisitos: JDK 21, Maven 3.9 o superior y Node.js 22 LTS con npm. Auth Service y Loan Service usan bases H2 locales; no necesitas instalar PostgreSQL.
 
 Abre cuatro terminales desde la raíz del repositorio:
 
@@ -79,7 +55,7 @@ Las cuentas y la clave JWT predeterminadas son solo para desarrollo. En producci
 
 ## Estado
 
-- Implementado: login Angular, roles USER/ADMIN, Auth Service y Loan Service, solicitudes y decisiones de préstamos, PostgreSQL con Compose o H2 sin Docker.
+- Implementado: login Angular, roles USER/ADMIN, Auth Service y Loan Service, solicitudes y decisiones de préstamos con H2 local.
 - Pendiente antes de producción: integración OIDC o firma asimétrica, recuperación de contraseña, validación de solvencia, migraciones de esquema y observabilidad.
 
 El entorno de desarrollo crea los dos usuarios y una solicitud pendiente de muestra. `ddl-auto: update` se usa únicamente para desarrollo; reemplazarlo por migraciones antes de producción.

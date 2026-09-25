@@ -51,8 +51,8 @@ Los tokens usan HS256. Los tres componentes deben compartir el mismo `JWT_SECRET
 
 - Auth Service solo escribe usuarios en su base.
 - Loan Service solo escribe solicitudes en su base.
-- Con Docker Compose, cada servicio usa una instancia y volumen PostgreSQL separado.
-- Sin Docker, el perfil `local` usa H2 en archivos bajo `services/auth-service/data/` y `services/loan-service/data/`.
+- En desarrollo, el perfil `local` usa H2 en archivos bajo `services/auth-service/data/` y `services/loan-service/data/`.
+- Para otro entorno, cada servicio acepta su URL y credenciales mediante `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME` y `SPRING_DATASOURCE_PASSWORD`.
 - `ddl-auto: update` y los usuarios de demostración son para desarrollo. Antes de producción deben sustituirse por migraciones y gestión real de cuentas.
 
 ## Pruebas unitarias
