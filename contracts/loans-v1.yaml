@@ -1,0 +1,94 @@
+openapi: 3.0.3
+info:
+  title: Loan Service API
+  version: 1.0.0
+servers:
+  - url: /api/v1
+paths:
+  /loans/my:
+    get:
+      operationId: listMyLoans
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Loans belonging to the authenticated user
+  /loans:
+    post:
+      operationId: applyForLoan
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewLoanRequest'
+      responses:
+        '201':
+          description: Loan application created
+        '400':
+          description: Invalid loan details
+  /admin/loans:
+    get:
+      operationId: listAllLoans
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Loan applications for administrators
+        '403':
+          description: Administrator role required
+  /admin/loans/{id}/decision:
+    patch:
+      operationId: decideLoan
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [APPROVED, REJECTED]
+      responses:
+        '200':
+          description: Loan decision saved
+        '403':
+          description: Administrator role required
+        '404':
+          description: Loan not found
+        '409':
+          description: Loan is no longer pending
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    NewLoanRequest:
+      type: object
+      required: [amount, termMonths, purpose]
+      properties:
+        amount:
+          type: number
+          minimum: 100
+        termMonths:
+          type: integer
+          minimum: 3
+          maximum: 360
+        purpose:
+          type: string
+          maxLength: 300

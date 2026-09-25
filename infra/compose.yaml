@@ -1,0 +1,91 @@
+services:
+  auth-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: auth
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: auth-dev-only
+    volumes:
+      - auth_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auth_user -d auth"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks:
+      - backend
+
+  loans-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: loans
+      POSTGRES_USER: loan_user
+      POSTGRES_PASSWORD: loan-dev-only
+    volumes:
+      - loans_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U loan_user -d loans"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks:
+      - backend
+
+  auth-service:
+    build:
+      context: ../services/auth-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://auth-db:5432/auth
+      SPRING_DATASOURCE_USERNAME: auth_user
+      SPRING_DATASOURCE_PASSWORD: auth-dev-only
+      JWT_SECRET: "${JWT_SECRET:-local-dev-secret-change-this-32-bytes-minimum}"
+    depends_on:
+      auth-db:
+        condition: service_healthy
+    networks:
+      - backend
+
+  loan-service:
+    build:
+      context: ../services/loan-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://loans-db:5432/loans
+      SPRING_DATASOURCE_USERNAME: loan_user
+      SPRING_DATASOURCE_PASSWORD: loan-dev-only
+      JWT_SECRET: "${JWT_SECRET:-local-dev-secret-change-this-32-bytes-minimum}"
+    depends_on:
+      loans-db:
+        condition: service_healthy
+    networks:
+      - backend
+
+  api-gateway:
+    build:
+      context: ../gateway
+    environment:
+      AUTH_SERVICE_URL: http://auth-service:8082
+      LOAN_SERVICE_URL: http://loan-service:8081
+      JWT_SECRET: "${JWT_SECRET:-local-dev-secret-change-this-32-bytes-minimum}"
+    depends_on:
+      - auth-service
+      - loan-service
+    networks:
+      - backend
+
+  frontend:
+    build:
+      context: ../frontend
+    ports:
+      - "127.0.0.1:4200:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - backend
+
+volumes:
+  auth_data:
+  loans_data:
+
+networks:
+  backend:
+    driver: bridge

@@ -1,0 +1,24 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: auth-service
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/auth}
+    username: ${SPRING_DATASOURCE_USERNAME:auth_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:auth-dev-only}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+
+app:
+  security:
+    jwt-secret: ${JWT_SECRET:local-dev-secret-change-this-32-bytes-minimum}
+    jwt-issuer: app-java-angular-auth
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

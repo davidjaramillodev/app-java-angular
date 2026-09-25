@@ -1,0 +1,36 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: auth-service
+          uri: ${AUTH_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/v1/auth/**
+        - id: loan-service
+          uri: ${LOAN_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/v1/loans/**
+        - id: admin-loans
+          uri: ${LOAN_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/v1/admin/loans/**
+
+app:
+  security:
+    jwt-secret: ${JWT_SECRET:local-dev-secret-change-this-32-bytes-minimum}
+    jwt-issuer: app-java-angular-auth
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
